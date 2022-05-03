@@ -3984,6 +3984,7 @@ MonoBehaviour:
   enemy3: {fileID: 0}
   restartbt: {fileID: 118430786}
   GameOver: {fileID: 1763911647}
+  NextLevel: {fileID: 0}
   loock: 0
 --- !u!114 &1641695176
 MonoBehaviour:
@@ -5678,7 +5679,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3294524240843644890, guid: b7dd870e8225147efbfca148cd3984d7, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -8.7
+      value: -8.31
       objectReference: {fileID: 0}
     - target: {fileID: 3294524240843644890, guid: b7dd870e8225147efbfca148cd3984d7, type: 3}
       propertyPath: m_LocalPosition.z

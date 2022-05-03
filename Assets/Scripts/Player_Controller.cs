@@ -37,7 +37,7 @@ public class Player_Controller : MonoBehaviour
 
     public bool loock;
 
-    
+
     // Start is called before the first frame update
     void Start()
     {
@@ -56,8 +56,8 @@ public class Player_Controller : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        Vector3 movement = new Vector3(moveX, y:0,z:moveY);
-        rb.AddForce(movement*temp_speed);
+        Vector3 movement = new Vector3(moveX, y: 0, z: moveY);
+        rb.AddForce(movement * temp_speed);
 
     }
 
@@ -73,7 +73,7 @@ public class Player_Controller : MonoBehaviour
             temp_speed = boost_speed;
             boost = boost - Time.deltaTime;
         }
-        if(count == pickups.transform.childCount)
+        if (count == pickups.transform.childCount)
         {
             victoryscreen.SetActive(true);
             enemy1.SetActive(false);
@@ -95,7 +95,7 @@ public class Player_Controller : MonoBehaviour
         {
             enemy2.SetActive(true);
             Rigidbody enemyrb = enemy2.GetComponent<Rigidbody>();
-            Vector3 movement = new Vector3(x: UnityEngine.Random.Range(5,10), y: 0, z: UnityEngine.Random.Range(5, 10));
+            Vector3 movement = new Vector3(x: UnityEngine.Random.Range(5, 10), y: 0, z: UnityEngine.Random.Range(5, 10));
             enemyrb.AddForce(movement);
         }
 
@@ -137,8 +137,9 @@ public class Player_Controller : MonoBehaviour
         if (other.gameObject.CompareTag("pickup"))
         {
             other.gameObject.SetActive(false);
+            
             count++;
-        
+
         }
         if (count == 7)
         {
@@ -149,32 +150,34 @@ public class Player_Controller : MonoBehaviour
             GameManager.Instance.LivesIncr();
         }
 
-        Transform [] allChildrens = PickupHolder.GetComponentsInChildren<Transform>();
+
+        Transform[] allChildrens = PickupHolder.transform.GetComponentsInChildren<Transform>();
         bool shouldWin = false;
-        for (int i = 0; i< allChildrens.Length; i++)
+        for (int i = 0; i < allChildrens.Length; i++)
         {
-            shouldWin = shouldWin || allChildrens[i].gameObject.activeSelf;
+            shouldWin = shouldWin || allChildrens[i].gameObject.activeInHierarchy;
+           // shouldWin = false;
 
             Debug.Log(allChildrens[i].gameObject.activeSelf);
         }
-        
+
         isWinning = !shouldWin;
 
         SetPlayerResult();
     }
     void SetPlayerResult()
     {
-       
-        if (isWinning == true)
+
+        if (isWinning)
         {
             CounterText.text = "Winner";
             loock = false;
             NextLevel.SetActive(true);
 
-}
+        }
         CounterText.text = "Count: " + count.ToString();
         CounterLivesText.text = "Lives " + GameManager.Instance.lives.ToString();
-             
+
     }
 
     private void OnCollisionEnter(Collision other)
@@ -194,7 +197,7 @@ public class Player_Controller : MonoBehaviour
     }
     private void OnCollisionExit(Collision collision)
     {
-        
+
     }
 
 
