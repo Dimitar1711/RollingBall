@@ -43,14 +43,28 @@ public class Player_Controller : MonoBehaviour
     {
         Time.timeScale = 1;
         restartbt.SetActive(false);
-        NextLevel.SetActive(false);
+        if (NextLevel != null)
+        {
+            NextLevel.SetActive(false);
+        }
         loock = false;
         victoryscreen.SetActive(false);
         rb = GetComponent<Rigidbody>();
         temp_speed = speed;
-        enemy1.SetActive(false);
-        enemy2.SetActive(false);
-        enemy3.SetActive(false);
+        if (enemy1 != null)
+        {
+            enemy1.SetActive(false);
+        }
+        if (enemy2 != null)
+        {
+            enemy2.SetActive(false);
+        }
+        if (enemy3 != null)
+        {
+            enemy3.SetActive(false);
+        }
+        CounterText.text = "Count: " + count.ToString();
+        CounterLivesText.text = "Lives " + GameManager.Instance.lives.ToString();
     }
 
     // Update is called once per frame
@@ -76,35 +90,54 @@ public class Player_Controller : MonoBehaviour
         if (count == pickups.transform.childCount)
         {
             victoryscreen.SetActive(true);
-            enemy1.SetActive(false);
-            enemy2.SetActive(false);
-            enemy3.SetActive(false);
+            if (enemy1 != null)
+            {
+                enemy1.SetActive(false);
+            }
+            if (enemy2 != null)
+            {
+                enemy2.SetActive(false);
+            }
+            if (enemy3 != null)
+            {
+                enemy3.SetActive(false);
+            }
             restartbt.SetActive(true);
             Time.timeScale = 0;
 
         }
         if (count == 1)
         {
-            enemy1.SetActive(true);
-            Rigidbody enemyrb = enemy1.GetComponent<Rigidbody>();
-            Vector3 movement = new Vector3(x: UnityEngine.Random.Range(5, 10), y: 0, z: UnityEngine.Random.Range(5, 10));
-            enemyrb.AddForce(movement);
+            if (enemy1 != null)
+            {
+                enemy1.SetActive(true);
+                Rigidbody enemyrb = enemy1.GetComponent<Rigidbody>();
+                Vector3 movement = new Vector3(x: UnityEngine.Random.Range(5, 10), y: 0, z: UnityEngine.Random.Range(5, 10));
+                enemyrb.AddForce(movement);
+            }
         }
 
         if (count == 5)
         {
-            enemy2.SetActive(true);
-            Rigidbody enemyrb = enemy2.GetComponent<Rigidbody>();
-            Vector3 movement = new Vector3(x: UnityEngine.Random.Range(5, 10), y: 0, z: UnityEngine.Random.Range(5, 10));
-            enemyrb.AddForce(movement);
+            if (enemy2 != null)
+            {
+                enemy2.SetActive(true);
+                Rigidbody enemyrb = enemy2.GetComponent<Rigidbody>();
+                Vector3 movement = new Vector3(x: UnityEngine.Random.Range(5, 10), y: 0, z: UnityEngine.Random.Range(5, 10));
+                enemyrb.AddForce(movement);
+            }
         }
 
         if (count == 9)
         {
-            enemy3.SetActive(true);
-            Rigidbody enemyrb = enemy3.GetComponent<Rigidbody>();
-            Vector3 movement = new Vector3(x: UnityEngine.Random.Range(5, 10), y: 0, z: UnityEngine.Random.Range(5, 10));
-            enemyrb.AddForce(movement);
+            if (enemy3 != null)
+            {
+                enemy3.SetActive(true);
+                Rigidbody enemyrb = enemy3.GetComponent<Rigidbody>();
+                Vector3 movement = new Vector3(x: UnityEngine.Random.Range(5, 10), y: 0, z: UnityEngine.Random.Range(5, 10));
+                enemyrb.AddForce(movement);
+            }
+            
         }
 
 
@@ -134,36 +167,54 @@ public class Player_Controller : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+        Transform[] allChildrens = PickupHolder.transform.GetComponentsInChildren<Transform>();
         if (other.gameObject.CompareTag("pickup"))
         {
-            other.gameObject.SetActive(false);
-            
-            count++;
+            //other.gameObject.SetActive(false);
+            for (int i = 0; i < allChildrens.Length; i++)
+            {
+                if (allChildrens[i].gameObject == other.gameObject)
+                {
+                    allChildrens[i].gameObject.SetActive(false);
+                }
+            }
+                count++;
+
+            if (count == 7)
+            {
+                GameManager.Instance.LivesIncr();
+            }
+            if (count == 13)
+            {
+                GameManager.Instance.LivesIncr();
+            }
+
+
+
+            bool shouldWin = false;
+            for (int i = 0; i < allChildrens.Length; i++)
+            {
+                Debug.Log("name " + allChildrens[i].name);
+            }
+
+            for (int i = 0; i < allChildrens.Length; i++)
+            {
+                if (allChildrens[i].gameObject != PickupHolder)
+                {
+                    shouldWin = shouldWin || allChildrens[i].gameObject.activeSelf;
+                }
+                
+                // shouldWin = false;
+
+                Debug.Log(allChildrens[i].gameObject.activeSelf);
+            }
+            Debug.Log("isWin" + shouldWin.ToString());
+            isWinning = !shouldWin;
+            Debug.Log("count" +allChildrens.Length);
+            SetPlayerResult();
 
         }
-        if (count == 7)
-        {
-            GameManager.Instance.LivesIncr();
-        }
-        if (count == 13)
-        {
-            GameManager.Instance.LivesIncr();
-        }
-
-
-        Transform[] allChildrens = PickupHolder.transform.GetComponentsInChildren<Transform>();
-        bool shouldWin = false;
-        for (int i = 0; i < allChildrens.Length; i++)
-        {
-            shouldWin = shouldWin || allChildrens[i].gameObject.activeInHierarchy;
-           // shouldWin = false;
-
-            Debug.Log(allChildrens[i].gameObject.activeSelf);
-        }
-
-        isWinning = !shouldWin;
-
-        SetPlayerResult();
+        
     }
     void SetPlayerResult()
     {
@@ -192,7 +243,16 @@ public class Player_Controller : MonoBehaviour
                 restartbt.SetActive(true);
             }
         }
-        SetPlayerResult();
+        if (other.gameObject.CompareTag("enemywall"))
+        {
+            GameManager.Instance.lives -= 1;
+            if (GameManager.Instance.lives == 0)
+            {
+                gameObject.SetActive(false);
+                GameOver.SetActive(true);
+                restartbt.SetActive(true);
+            }
+        }
 
     }
     private void OnCollisionExit(Collision collision)
